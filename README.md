@@ -13,10 +13,11 @@ PHP Sanity is a PHP class providing utility functions for performing mutations t
      * @param string $apiVersion
      */
     
-$sanity = new Sanity('a1b2c3d4',
+`$sanity = new Sanity('a1b2c3d4',
     'staging',
     'skHDqRYxjC4357Zh5NaVZ9qgXVF4JF0RPPEnzy50RwtubW7fzoWpl9t9JDZ7rNFEIO4Hy2D3423M....',
     '2019-01-29');
+    `
 
 
 
@@ -25,23 +26,27 @@ $sanity = new Sanity('a1b2c3d4',
 `attachImage()` 
 Given an image URL, uploads image and attaches it to a specified documentId.
 
+----
 `batchCreate()`
 Given a list of fields (either an array of arrays or array of object), imports these records in a single batch operation.
 
+----
 `batchCreateFromFile()`
 Given a file, reads this file into an array, separates the columns bases on the field separator, and then creates a document of given type.
 
+----
 `create()`
 Given a schemaType, create a new record from an object or array with optional field names.
 
-
+Example:
 `$id = $sanity->create('employee', ['Fred', 'Jones', '1234'], ['firstName', 'lastName', 'ID']);`
 
-
+----
 
 `createFromString()`
 Given a schemaType, create a new record from a string with specified field separator and specified field names.
 
+----
 
 `copy()`
 Given a schemaType, copies all of the values for one field type to another.
