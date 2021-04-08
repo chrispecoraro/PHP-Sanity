@@ -2,6 +2,24 @@
 
 PHP Sanity is a PHP class providing utility functions for performing mutations to https://Sanity.io schemas.
 
+### Usage:
+
+
+    /**
+     * Sanity constructor.
+     * @param string $projectId
+     * @param string $dataset
+     * @param string $token
+     * @param string $apiVersion
+     */
+    
+$sanity = new Sanity('a1b2c3d4',
+    'staging',
+    'skHDqRYxjC4357Zh5NaVZ9qgXVF4JF0RPPEnzy50RwtubW7fzoWpl9t9JDZ7rNFEIO4Hy2D3423M....',
+    '2019-01-29');
+
+
+
  Basic functions:
  
 `attachImage()` 
@@ -15,6 +33,11 @@ Given a file, reads this file into an array, separates the columns bases on the 
 
 `create()`
 Given a schemaType, create a new record from an object or array with optional field names.
+
+
+`$id = $sanity->create('employee', ['Fred', 'Jones', '1234'], ['firstName', 'lastName', 'ID']);`
+
+
 
 `createFromString()`
 Given a schemaType, create a new record from a string with specified field separator and specified field names.
