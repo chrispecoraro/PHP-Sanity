@@ -30,15 +30,38 @@ Given an image URL, uploads image and attaches it to a specified documentId.
 `batchCreate()`
 Given a list of fields (either an array of arrays or array of object), imports these records in a single batch operation.
 
+_Example_:
+```
+$countries = [
+    "Afghanistan",
+    "Albania",
+    "Algeria",
+    "Andorra",
+    "Angola",
+    "Antigua and Barbuda",
+    "Argentina",
+    "Armenia",
+    "Australia",
+    "Austria",
+    "Azerbaijan",
+    "Bahamas",
+    "Bahrain",
+     ...
+     ];
+     
+ $sanity->batchCreate('country', $countries, ['name']);
+```
+
+
 ----
 `batchCreateFromFile()`
-Given a file, reads this file into an array, separates the columns bases on the field separator, and then creates a document of given type.
+Given a file, reads this file into an array, separates the columns based on the field separator, and then creates a document of given type.
 
 ----
 `create()`
 Given a schemaType, create a new record from an object or array with optional field names.
 
-Example:
+_Example_:
 `$id = $sanity->create('employee', ['Fred', 'Jones', '1234'], ['firstName', 'lastName', 'ID']);`
 
 ----
