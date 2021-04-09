@@ -1,6 +1,7 @@
 # PHP-Sanity
 
-PHP Sanity is a PHP class providing utility functions for performing mutations to https://Sanity.io schemas.
+PHP Sanity is a PHP class providing convience utility functions for performing mutations to https://Sanity.io schemas.
+This requires the sanity-php client. https://github.com/sanity-io/sanity-php
 
 ### Usage:
 
