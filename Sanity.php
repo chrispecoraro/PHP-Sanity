@@ -8,6 +8,10 @@ use Sanity\Client as SanityClient;
  */
 class Sanity
 {
+    /**
+     * @var string
+     */
+    private string $documentId;
 
     /**
      * Sanity constructor.
@@ -29,6 +33,23 @@ class Sanity
             'token' => $this->getToken(),
             'apiVersion' => $this->getApiVersion(),
         ]);
+    }
+
+    /**
+     * @return string
+     */
+    public function getDocumentId(): string
+    {
+        return $this->documentId;
+    }
+
+
+    /**
+     * @param string $documentId
+     */
+    public function setDocumentId(string $documentId): void
+    {
+        $this->documentId = $documentId;
     }
 
     /**
@@ -95,56 +116,43 @@ class Sanity
         $this->apiVersion = $apiVersion;
     }
 
-
-    public function getBlocks($text)
+    /**
+     * @param $query
+     * @return mixed
+     */
+    public function fetch($query)
     {
-        $blocks = explode(
-            "</p>", html_entity_decode(str_replace("<p>", "", $text))
-        );
-        $arr = [];
-        foreach ($blocks as $block) {
-            $arr[] = $this->makeBlock($block);
-        }
-        return $arr;
-    }
-
-    public function makeBlock($text)
-    {
-        return [
-            "_key" => (string)rand(100000, 999999999),
-            "_type" => "block",
-            "children" => [
-                [
-                    "_key" => (string)rand(100000, 999999999),
-                    "_type" => "span",
-                    "marks" => [],
-                    "text" => $text
-                ]
-            ],
-            'markDefs' => [],
-            "style" => "normal"
-        ];
+        return $this->client->fetch($query);
     }
 
     /**
-     *
-     * Given a image URL, upload this image into Sanity and attach to a document.
-     *
+     * @param string $schemaType
+     * @return array
+     */
+    public function all(string $schemaType): array
+    {
+        $query = "*[_type == '$schemaType']";
+        echo $query;
+        return $this->client->fetch($query);
+    }
+
+    /**
      * @param $imageUrl
-     * @param $sanityDocumentId
      * @param string $fieldName
      * @param string $imageType
+     * @param null $documentId
+     * @return $this
      */
-    public function attachImage($imageUrl, $sanityDocumentId, $fieldName = 'image', $imageType = 'image')
+    public function attachImage($imageUrl, $fieldName = 'image', $imageType = 'image', $documentId = null)
     {
         $img = file_get_contents($imageUrl);
-        $filePath = explode("/",);
-        $tempFile = tempname(sys_get_temp_dir(), $filePath);
+        $filePath = explode("/",$imageUrl);
+        $tempFile = tempnam(sys_get_temp_dir(), $filePath[count($filePath)-1]);
         file_put_contents($tempFile, $img);
         $asset = $this->client->uploadAssetFromFile('image', $tempFile);
 
         try {
-            $this->client->patch($sanityDocumentId)
+            $this->client->patch($this->useDocumentId($documentId))
                 ->set([$fieldName =>
                         ['_type' => $imageType, 'asset' =>
                             ['_ref' => $asset['_id']]
@@ -156,6 +164,7 @@ class Sanity
             echo 'Failed to attach image:';
             var_dump($error);
         }
+        return $this;
     }
 
     /**
@@ -172,9 +181,18 @@ class Sanity
         $ids = [];
         foreach ($documentList as $document) {
             $createFields = is_array($document) ? array_merge($schemaTypeArray, $document) : array_merge($schemaTypeArray, (array)$document);
-            $createdDocument = $this->client->create($createFields);
-            usleep(50);
+            if (is_array($fieldNames)) {
+                if (count($fieldNames) == 0) {
+                    return ["FieldNames need to be specified or set to null."];
+                }
+                $values = is_array($document) ? $document : [$document];
+                $createFields = array_combine($fieldNames, $values);
+            }
+            $mergedFields = array_merge(['_type' => $schemaType], $createFields);
+
+            $createdDocument = $this->client->create($mergedFields);
             $ids[] = $createdDocument['_id'];
+            usleep(50);
         }
         return $ids;
     }
@@ -203,12 +221,11 @@ class Sanity
         return $ids;
     }
 
-
     /**
      * @param string $schemaType
      * @param object|array $document
      * @param array|null $fieldNames
-     * @return string
+     * @return mixed|string
      */
     public function create(string $schemaType, object|array $document, ?array $fieldNames = null)
     {
@@ -219,7 +236,7 @@ class Sanity
                 return "FieldNames need to be specified or set to null";
             }
 
-            $createFields = array_combine($fieldNames, $document);
+            $createFields = array_combine($fieldNames, $createFields);
         }
         $mergedFields = array_merge(['_type' => $schemaType], $createFields);
         $createdDocument = $this->client->create($mergedFields);
@@ -229,29 +246,51 @@ class Sanity
 
     /**
      * @param string $schemaType
-     * @param object|array $document
+     */
+    public function deleteAll(string $schemaType)
+    {
+        $this->client->delete(
+            ['query' =>
+                '*[_type == "' . $schemaType . '"]'
+            ],
+        );
+    }
+
+    /**
+     * @param string $id
+     */
+    public function deleteById(string $id)
+    {
+        $this->client->delete(
+            [
+                'query' => '*[_id == "' . $id . '"]'
+            ],
+        );
+    }
+
+    /**
+     * @param string $schemaType
+     * @param string $string
      * @param array|null $fieldNames
      * @param string $separator
-     * @return string
+     * @return mixed
      */
-    public function createFromString(string $schemaType, object|array $document, ?array $fieldNames = null, $separator = ',')
+    public function createFromString(string $schemaType, string $string, ?array $fieldNames = null, $separator = ',')
     {
         $schemaTypeArray = [
             '_type' => $schemaType,
         ];
-        $createFields = is_array($document) ? array_merge($schemaTypeArray, $document) : array_merge($schemaTypeArray, (array)$document);
+        $createFields = str_getcsv($string, $separator);
+        $createFields = array_combine($fieldNames, $createFields);
 
-        $createdDocument = $this->client->create($createFields);
+
+        $createdDocument = $this->client->create(array_merge($schemaTypeArray, $createFields));
+
         usleep(50);
         return $createdDocument['_id'];
     }
 
     /**
-     *
-     * Copies the $documentType's $sourceFields's value to the $targetField value.
-     *
-     * Example: $mySanity->replace('post','title','seoTitle')
-     *
      * @param string $documentType
      * @param string $targetField
      * @param string $sourceField
@@ -269,8 +308,54 @@ class Sanity
                 echo 'The update failed:';
                 var_dump($error);
             }
-            // Don't overwhelm the API
-            usleep(20);
+            usleep(50);
         }
+    }
+
+    /**
+     * @param $fieldName
+     * @param $fieldValue
+     * @param null $documentId
+     * @return $this
+     */
+    public function set($fieldName, $fieldValue, $documentId = null)
+    {
+        $this->client->patch($this->useDocumentId($documentId))->set([$fieldName => $fieldValue])
+            ->commit();
+        return $this;
+    }
+
+    /**
+     * @param $block
+     * @return string
+     */
+    public function getStringFromBlock($block)
+    {
+
+        if (is_array($block)) {
+            $string = array_map(function($block)
+            {
+                if ($block['_type'] !== 'block' || !isset($block['children'])) {
+                    return '';
+                }
+                $childenTextBlocks = array_map(function($child)
+                {
+                    return $child['text'];
+                }, $block['children']);
+                return implode($childenTextBlocks);
+            }, $block);
+            return implode("\n\n", $string);
+        }
+        return '';
+    }
+
+    /**
+     * @param mixed $documentId
+     * @return mixed
+     */
+    protected function useDocumentId(mixed $documentId): mixed
+    {
+        $documentId = $documentId ?? $this->getDocumentId();
+        return $documentId;
     }
 }
