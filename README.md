@@ -1,53 +1,110 @@
 # PHP-Sanity
 
-PHP Sanity is a PHP class providing utility functions for performing mutations to https://Sanity.io schemas.
+PHP Sanity is a PHP class providing convience utility functions for performing mutations to https://Sanity.io schemas.
+This requires the sanity-php client. https://github.com/sanity-io/sanity-php
 
 ### Usage:
 
 
-    /**
-     * Sanity constructor.
-     * @param string $projectId
-     * @param string $dataset
-     * @param string $token
-     * @param string $apiVersion
-     */
-    
-`$sanity = new Sanity('a1b2c3d4',
-    'staging',
-    'skHDqRYxjC4357Zh5NaVZ9qgXVF4JF0RPPEnzy50RwtubW7fzoWpl9t9JDZ7rNFEIO4Hy2D3423M....',
-    '2019-01-29');
-    `
+// instantiation:
 
+`$sanity = new Sanity('1a2b3c4d', 'production',
+'skY70CML0Ovm3GfPqQKeLtBNnS....',
+'2019-01-29');`
 
+-----
 
- Basic functions:
- 
-`attachImage()` 
-Given an image URL, uploads image and attaches it to a specified documentId.
+`create()` is useful for creating a single record from an array or object:
 
-----
-`batchCreate()`
-Given a list of fields (either an array of arrays or array of object), imports these records in a single batch operation.
+`$arr = ['Tim', 'Jones'];
+$sanity->create("employee", $arr, ["firstName","lastName"]);`
 
-----
-`batchCreateFromFile()`
-Given a file, reads this file into an array, separates the columns bases on the field separator, and then creates a document of given type.
+-----
 
-----
-`create()`
-Given a schemaType, create a new record from an object or array with optional field names.
+`create()` also works with an object:
 
-Example:
-`$id = $sanity->create('employee', ['Fred', 'Jones', '1234'], ['firstName', 'lastName', 'ID']);`
+`$sanity->create("employee", (object)$arr,["firstName","lastName"]);`
 
-----
+-----
 
-`createFromString()`
-Given a schemaType, create a new record from a string with specified field separator and specified field names.
+`createFromString()` creates a single document given a delimited string.
 
-----
+`$sanity->createFromString("employee",'Ralph|Peters',["firstName","lastName"],'|');`
 
-`copy()`
-Given a schemaType, copies all of the values for one field type to another.
+-----
 
+` batchCreate()` is useful for importing from an array of arrays or objects
+
+`$docs = [
+    ['Bob', 'Jones'],
+    ['Ron', 'Philips']
+];
+$sanity->batchCreate("employee", $docs, ["firstName","lastName"]);
+$sanity->batchCreate("employee", (object)$docs, ["firstName","lastName"]);`
+
+-----
+
+`batchCreateFromFile()` is useful for importing from a delimited file
+
+`// example file:
+// records.csv:
+//    Bob|Jones
+//    Ron|Philips
+$sanity->batchCreateFromFile("employee", "./records.csv", ["firstName","lastName"], "|");`
+
+-----
+
+`copy()` copies the document source field to the target field's value.
+// This is useful for back filling fields
+
+`$sanity->copy('employee','telephone','cellular');`
+
+-----
+
+`attachImage()` works with the Document ID as a parameter
+
+`$sanity->attachImage('/home/bob/Documents/Bob-Photo.jpeg',
+    documentId: 'fb5b618b-47e4-40c7-964b-2e479cb33');`
+
+-----
+
+`attachImage()` also works with a documentId set as a class property
+
+`$sanity->setDocumentId("fb5b618b-47e4-40c7-964b-29cb33c4");
+$sanity->attachImage("/home/bob/Documents/avatar.jpg");`
+
+-----
+
+`attachImage()` also works with an image URL
+
+`$sanity->setDocumentId("fb5b618b-47e4-40c7-964b-279cb33c4");
+$sanity->attachImage("https://picsum.photos/400/300");`
+
+-----
+
+`all()` is a shortcut equivalent a fetch using GROQ
+//$results = $sanity->fetch('*[_type=="menuItem"]');
+
+`$results = $sanity->all("employee");`
+
+-----
+
+`set()` sets a single field in a document to a given value.
+
+`$sanity->set("lastName","Jones","fb5b618b-47e4-40c7-964b-2e479cb3c4");`
+
+-----
+
+`deleteAll()` deletes ALL documents of a given schema type.
+
+IMPORTANT: be careful and make a back up (export the dataset first).
+
+`$sanity->deleteAll('employee');`
+
+-----
+
+`deleteById()` deletes a single documents given its id.
+
+IMPORTANT: be careful and make a back up (export the dataset first).
+
+`$sanity->deleteById('fb5b618b-47e4-40c7-964b-2e479cb33c');`
