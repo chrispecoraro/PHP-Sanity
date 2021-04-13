@@ -17,6 +17,7 @@ This requires the sanity-php client. https://github.com/sanity-io/sanity-php
 `create()` is useful for creating a single record from an array or object:
 
 `$arr = ['Tim', 'Jones'];
+
 $sanity->create("employee", $arr, ["firstName","lastName"]);`
 
 -----
@@ -39,7 +40,9 @@ $sanity->create("employee", $arr, ["firstName","lastName"]);`
     ['Bob', 'Jones'],
     ['Ron', 'Philips']
 ];
+
 $sanity->batchCreate("employee", $docs, ["firstName","lastName"]);
+
 $sanity->batchCreate("employee", (object)$docs, ["firstName","lastName"]);`
 
 -----
@@ -50,6 +53,7 @@ $sanity->batchCreate("employee", (object)$docs, ["firstName","lastName"]);`
 // records.csv:
 //    Bob|Jones
 //    Ron|Philips
+
 $sanity->batchCreateFromFile("employee", "./records.csv", ["firstName","lastName"], "|");`
 
 -----
@@ -71,6 +75,7 @@ $sanity->batchCreateFromFile("employee", "./records.csv", ["firstName","lastName
 `attachImage()` also works with a documentId set as a class property
 
 `$sanity->setDocumentId("fb5b618b-47e4-40c7-964b-29cb33c4");
+
 $sanity->attachImage("/home/bob/Documents/avatar.jpg");`
 
 -----
@@ -78,6 +83,7 @@ $sanity->attachImage("/home/bob/Documents/avatar.jpg");`
 `attachImage()` also works with an image URL
 
 `$sanity->setDocumentId("fb5b618b-47e4-40c7-964b-279cb33c4");
+
 $sanity->attachImage("https://picsum.photos/400/300");`
 
 -----
