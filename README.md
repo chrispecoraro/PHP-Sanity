@@ -8,10 +8,11 @@ This requires the sanity-php client. https://github.com/sanity-io/sanity-php
 
 // instantiation:
 
-`$sanity = new Sanity('1a2b3c4d', 'production',
+```php
+$sanity = new Sanity('1a2b3c4d', 'production',
 'skY70CML0Ovm3GfPqQKeLtBNnS....',
 '2019-01-29');`
-
+```
 -----
 
 `create()` is useful for creating a single record from an array or object:
@@ -34,7 +35,7 @@ $sanity->create("employee", (object)$arr,["firstName","lastName"]);
 `createFromString()` creates a single document given a delimited string.
 
 ```php
-$sanity->createFromString("employee",'Ralph|Peters',["firstName","lastName"],'|');`
+$sanity->createFromString("employee",'Ralph|Peters',["firstName","lastName"],'|');
 ```
 -----
 
@@ -46,7 +47,7 @@ $docs = [
     ['Ron', 'Philips']
 ];
 $sanity->batchCreate("employee", $docs, ["firstName","lastName"]);
-$sanity->batchCreate("employee", (object)$docs, ["firstName","lastName"]);`
+$sanity->batchCreate("employee", (object)$docs, ["firstName","lastName"]);
 ```
 -----
 
@@ -58,7 +59,7 @@ $sanity->batchCreate("employee", (object)$docs, ["firstName","lastName"]);`
 //    Bob|Jones
 //    Ron|Philips
 
-$sanity->batchCreateFromFile("employee", "./records.csv", ["firstName","lastName"], "|");`
+$sanity->batchCreateFromFile("employee", "./records.csv", ["firstName","lastName"], "|");
 ```
 
 -----
@@ -67,7 +68,7 @@ $sanity->batchCreateFromFile("employee", "./records.csv", ["firstName","lastName
 // This is useful for back filling fields
 
 ```php
-$sanity->copy('employee','telephone','cellular');`
+$sanity->copy('employee','telephone','cellular');
 ```
 -----
 
@@ -75,7 +76,7 @@ $sanity->copy('employee','telephone','cellular');`
 
 ```php
 $sanity->attachImage('/home/bob/Documents/Bob-Photo.jpeg',
-    documentId: 'fb5b618b-47e4-40c7-964b-2e479cb33');`
+    documentId: 'fb5b618b-47e4-40c7-964b-2e479cb33');
 ```
 -----
 
@@ -83,7 +84,7 @@ $sanity->attachImage('/home/bob/Documents/Bob-Photo.jpeg',
 
 ```php
 $sanity->setDocumentId("fb5b618b-47e4-40c7-964b-29cb33c4");
-$sanity->attachImage("/home/bob/Documents/avatar.jpg");`
+$sanity->attachImage("/home/bob/Documents/avatar.jpg");
 ```
 -----
 
@@ -91,7 +92,7 @@ $sanity->attachImage("/home/bob/Documents/avatar.jpg");`
 
 ```php
 $sanity->setDocumentId("fb5b618b-47e4-40c7-964b-279cb33c4");
-$sanity->attachImage("https://picsum.photos/400/300");`
+$sanity->attachImage("https://picsum.photos/400/300");
 ```
 -----
 
@@ -99,14 +100,14 @@ $sanity->attachImage("https://picsum.photos/400/300");`
 //$results = $sanity->fetch('*[_type=="menuItem"]');
 
 ```php
-$results = $sanity->all("employee");`
+$results = $sanity->all("employee");
 ```
 -----
 
 `set()` sets a single field in a document to a given value.
 
 ```php
-$sanity->set("lastName","Jones","fb5b618b-47e4-40c7-964b-2e479cb3c4");`
+$sanity->set("lastName","Jones","fb5b618b-47e4-40c7-964b-2e479cb3c4");
 ```
 -----
 
@@ -124,5 +125,5 @@ $sanity->deleteAll('employee');`
 IMPORTANT: be careful and make a back up (export the dataset first).
 
 ```php
-$sanity->deleteById('fb5b618b-47e4-40c7-964b-2e479cb33c');`
+$sanity->deleteById('fb5b618b-47e4-40c7-964b-2e479cb33c');
 ```
