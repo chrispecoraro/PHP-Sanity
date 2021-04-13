@@ -19,7 +19,7 @@ $sanity = new Sanity('1a2b3c4d', 'production',
 
 ```php
 $arr = ['Tim', 'Jones'];
-$sanity->create("employee", $arr, ["firstName","lastName"]);```
+$sanity->create("employee", $arr, ["firstName","lastName"]);
 ```
 
 -----
@@ -116,7 +116,7 @@ $sanity->set("lastName","Jones","fb5b618b-47e4-40c7-964b-2e479cb3c4");
 IMPORTANT: be careful and make a back up (export the dataset first).
 
 ```php
-$sanity->deleteAll('employee');`
+$sanity->deleteAll('employee');
 ```
 -----
 
