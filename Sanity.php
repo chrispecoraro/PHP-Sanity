@@ -1,5 +1,5 @@
 <?php
-require_once '../vendor/autoload.php';
+require_once 'vendor/autoload.php';
 
 use Sanity\Client as SanityClient;
 
@@ -134,6 +134,30 @@ class Sanity
         $query = "*[_type == '$schemaType']";
         echo $query;
         return $this->client->fetch($query);
+    }
+
+    /**
+     * @param string $fieldName
+     * @param null $relatedFieldId
+     * @param null $documentId
+     * @return $this
+     */
+    public function attach($fieldName, $relatedFieldId, $documentId)
+    {
+        try {
+            $this->client->patch($this->useDocumentId($documentId))
+                ->set([$fieldName =>
+                            ['_ref' => $relatedFieldId,
+                                '_type' => 'reference'
+                            ]
+                    ]
+                )
+                ->commit();
+        } catch (BaseException $error) {
+            echo 'Failed to attach document Id $documentId to field $fieldName:';
+            var_dump($error);
+        }
+        return $this;
     }
 
     /**
