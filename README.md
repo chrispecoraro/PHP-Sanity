@@ -72,6 +72,16 @@ $sanity->copy('employee','telephone','cellular');
 ```
 -----
 
+
+`attach()` attaches (using a reference) a document (via id) to a document.
+
+```php
+$sanity->attach(fieldName: 'group', 
+relatedFieldId: '1991fe09-b54c-4e35-9d32-15413863c3b6',
+    documentId: 'fb5b618b-47e4-40c7-964b-2e479cb33');
+```
+-----
+
 `attachImage()` works with the Document ID as a parameter
 
 ```php
