@@ -130,7 +130,6 @@ class PhpSanity
     public function all(string $schemaType): array
     {
         $query = "*[_type == '$schemaType']";
-        echo $query;
         return $this->client->fetch($query);
     }
 
