@@ -131,7 +131,16 @@ class PhpSanity
     public function all(string $schemaType, array $selectFields = []): array
     {
         $query = "*[_type == '$schemaType']";
-        if (count($selectFields) > 0) $query.='{'. implode(',',$selectFields ).'}';
+        $selectFieldArray = [];
+        if (count($selectFields) > 0) {
+            foreach ($selectFields as $field) {
+                $fieldArray = preg_split("/[^A-Za-z0-9]/",  $field);
+                $fieldName = $this->getCamelCasedName($fieldArray, $field);
+                array_push($selectFieldArray,"\"$fieldName\":$field");
+            }
+            $query.='{'. implode(',',$selectFieldArray).'}';
+        }
+
         return $this->client->fetch($query);
     }
 
@@ -380,5 +389,18 @@ class PhpSanity
     {
         $documentId = $documentId ?? $this->getDocumentId();
         return $documentId;
+    }
+
+    /**
+     * @param array $fieldArray
+     * @param string $field
+     * @return string
+     */
+    public function getCamelCasedName(array $fieldArray, mixed $field): string
+    {
+        if (count($fieldArray) > 1) {
+            return str_replace(' ', '', $fieldArray[0] . ucwords(implode(' ', array_slice($fieldArray, 1))));
+        } 
+        return $field;
     }
 }
