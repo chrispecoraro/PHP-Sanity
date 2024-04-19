@@ -144,12 +144,6 @@ class PhpSanity
         return $this->client->fetch($query);
     }
 
-    public function getRefs(string $schemaType): array
-    {
-        $query = "*[_type == '$schemaType']";
-
-        return $this->client->fetch($query);
-    }
     /**
      * @param string $fieldName
      * @param null $relatedFieldId
