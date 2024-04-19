@@ -125,11 +125,13 @@ class PhpSanity
 
     /**
      * @param string $schemaType
+     * @param array $selectFields
      * @return array
      */
-    public function all(string $schemaType): array
+    public function all(string $schemaType, array $selectFields = []): array
     {
         $query = "*[_type == '$schemaType']";
+        if (count($selectFields) > 0) $query.='{'. implode(',',$selectFields ).'}';
         return $this->client->fetch($query);
     }
 
