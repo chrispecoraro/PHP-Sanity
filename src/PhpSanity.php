@@ -153,7 +153,7 @@ class PhpSanity
         $result = $this->client->fetch($query);
 
         // Save result to cache
-        Cache::store('database')->put($query, $result, now()->addDay(1));  // Adjust cache time as necessary
+        Cache::store('vapor_cache')->put($query, $result, now()->addHours(1));  // Adjust cache time as necessary
         return $result;
 
     }
