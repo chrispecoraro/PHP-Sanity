@@ -3,6 +3,7 @@
 namespace Chrispecoraro\PhpSanity;
 
 use Sanity\Client as SanityClient;
+use Illuminate\Support\Facades\Cache;
 
 class PhpSanity
 {
@@ -126,9 +127,10 @@ class PhpSanity
     /**
      * @param string $schemaType
      * @param array $selectFields
-     * @return array
+     * @param null &$query
+     * @return &$query = null
      */
-    public function all(string $schemaType, array $selectFields = []): array
+    public function all(string $schemaType, array $selectFields = [], null &$query): array
     {
         $query = "*[_type == '$schemaType']";
         $selectFieldArray = [];
@@ -141,7 +143,19 @@ class PhpSanity
             $query.='{'. implode(',',$selectFieldArray).'}';
         }
 
-        return $this->client->fetch($query);
+        /// cache check
+
+//        if (Cache::store('database')->has($query)) {
+//            return Cache::store('database')->get($query);
+//        }
+        /// end cache check
+
+        $result = $this->client->fetch($query);
+
+        // Save result to cache
+        Cache::store('database')->put($query, $result, now()->addDay(1));  // Adjust cache time as necessary
+        return $result;
+
     }
 
     /**
