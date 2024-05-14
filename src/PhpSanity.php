@@ -3,7 +3,7 @@
 namespace Chrispecoraro\PhpSanity;
 
 use Sanity\Client as SanityClient;
-use Illuminate\Support\Facades\Cache;
+//use Illuminate\Support\Facades\Cache;
 
 class PhpSanity
 {
@@ -153,7 +153,7 @@ class PhpSanity
         $result = $this->client->fetch($query);
 
         // Save result to cache
-        Cache::store('vapor_cache')->put($query, $result, now()->addHours(1));  // Adjust cache time as necessary
+       // Cache::store('vapor_cache')->put($query, $result, now()->addHours(1));  // Adjust cache time as necessary
         return $result;
 
     }
