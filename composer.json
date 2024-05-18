@@ -2,7 +2,7 @@
     "name": "chrispecoraro/php-sanity",
     "description": "A collection of utilities for use with Sanity.io",
     "require": {
-        "sanity/sanity-php": "^1.5"
+        "sanity/sanity-php": "^1.5.2"
     },
     "autoload": {
         "psr-4": {
